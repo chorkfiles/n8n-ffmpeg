@@ -17,11 +17,8 @@ COPY --from=ffmpeg-downloader /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
 COPY --from=ffmpeg-downloader /usr/local/bin/ffprobe /usr/local/bin/ffprobe
 RUN chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe
 
-# Create directories and fix permissions
-RUN mkdir -p /home/node/.n8n /tmp/viral-clips && \
-    chown -R node:node /home/node/.n8n /tmp/viral-clips
-
-USER node
+# Create directories
+RUN mkdir -p /home/node/.n8n /tmp/viral-clips
 
 WORKDIR /home/node
 
