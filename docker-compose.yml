@@ -2,22 +2,48 @@ version: '3.8'
 
 services:
   n8n:
-    build: .
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
     ports:
       - "5678:5678"
     environment:
+      # Domain configuration
       - N8N_HOST=chorkn8n.com
       - N8N_PORT=5678
       - N8N_PROTOCOL=https
       - WEBHOOK_URL=https://chorkn8n.com/
       - N8N_EDITOR_BASE_URL=https://chorkn8n.com/
+
+      # Security
+      - N8N_BASIC_AUTH_ACTIVE=false
+      - N8N_SECURE_COOKIE=true
+
+      # Timezone
       - GENERIC_TIMEZONE=America/New_York
+      - TZ=America/New_York
+
+      # Enable features
       - N8N_COMMUNITY_PACKAGES_ENABLED=true
       - EXECUTIONS_PROCESS=main
+      - N8N_PERSONALIZATION_ENABLED=false
+
+      # Binary data handling
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+
+      # Node access
       - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
       - NODES_INCLUDE=n8n-nodes-base.executeCommand
+      - N8N_NODES_INCLUDE=n8n-nodes-base.executeCommand
+
+      # Execution settings
+      - EXECUTIONS_DATA_SAVE_ON_ERROR=all
+      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=all
+      - EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS=true
+
     volumes:
-      - n8n_data:/home/n8n/.n8n
+      - n8n_data:/home/node/.n8n
+    user: root
 
 volumes:
   n8n_data:
