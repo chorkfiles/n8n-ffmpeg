@@ -12,13 +12,14 @@ FROM n8nio/n8n:latest
 
 USER root
 
-# Copy static FFmpeg binaries (no dependencies needed)
+# Copy static FFmpeg binaries
 COPY --from=ffmpeg-downloader /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
 COPY --from=ffmpeg-downloader /usr/local/bin/ffprobe /usr/local/bin/ffprobe
 RUN chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe
 
-# Create working directory for clips
-RUN mkdir -p /tmp/viral-clips && chown -R node:node /tmp/viral-clips
+# Create directories and fix permissions
+RUN mkdir -p /home/node/.n8n /tmp/viral-clips && \
+    chown -R node:node /home/node/.n8n /tmp/viral-clips
 
 USER node
 
