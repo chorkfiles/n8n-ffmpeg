@@ -38,6 +38,7 @@ services:
       # Node access (ensure Execute Command is available)
       - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
       - NODES_EXCLUDE=
+      - NODE_FUNCTION_ALLOW_BUILTIN=fs,path
 
       # Execution settings
       - EXECUTIONS_DATA_SAVE_ON_ERROR=all
