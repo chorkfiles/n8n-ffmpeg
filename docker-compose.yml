@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   n8n:
-    image: n8nio/n8n:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: n8n
     restart: unless-stopped
     ports:
@@ -15,7 +17,7 @@ services:
       - WEBHOOK_URL=https://chorkn8n.com/
       - N8N_EDITOR_BASE_URL=https://chorkn8n.com/
 
-      # Security
+      # Security - change these!
       - N8N_BASIC_AUTH_ACTIVE=false
       - N8N_SECURE_COOKIE=true
 
@@ -28,13 +30,13 @@ services:
       - EXECUTIONS_PROCESS=main
       - N8N_PERSONALIZATION_ENABLED=false
 
-      # Binary data handling
+      # Binary data handling (for video files)
       - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+      - N8N_BINARY_DATA_STORAGE_PATH=/home/node/.n8n/binaryData
 
-      # Node access
+      # Node access (ensure Execute Command is available)
       - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
-      - NODES_INCLUDE=n8n-nodes-base.executeCommand
-      - N8N_NODES_INCLUDE=n8n-nodes-base.executeCommand
+      - NODES_EXCLUDE=
 
       # Execution settings
       - EXECUTIONS_DATA_SAVE_ON_ERROR=all
@@ -43,7 +45,14 @@ services:
 
     volumes:
       - n8n_data:/home/node/.n8n
-    user: root
+      - viral_clips:/tmp/viral-clips
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:5678/healthz', (r) => process.exit(r.statusCode === 200 ? 0 : 1))\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
 volumes:
   n8n_data:
+  viral_clips:
