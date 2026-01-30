@@ -1,19 +1,22 @@
-FROM node:20-alpine
+# Use official n8n image and add FFmpeg
+FROM n8nio/n8n:latest
 
-RUN apk add --no-cache ffmpeg ttf-dejavu su-exec tini
+# Switch to root to install packages
+USER root
 
-RUN npm install -g n8n
+# Install FFmpeg (Debian-based image uses apt-get)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    fonts-dejavu \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN addgroup -S n8n && adduser -S -G n8n n8n \
-    && mkdir -p /home/n8n/.n8n /tmp/viral-clips \
-    && chown -R n8n:n8n /home/n8n /tmp/viral-clips
+# Create working directory for clips
+RUN mkdir -p /tmp/viral-clips && chown -R node:node /tmp/viral-clips
 
-USER n8n
-WORKDIR /home/n8n
+# Switch back to node user
+USER node
 
-ENV N8N_USER_FOLDER=/home/n8n/.n8n
+WORKDIR /home/node
 
 EXPOSE 5678
-
-ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["n8n", "start"]
